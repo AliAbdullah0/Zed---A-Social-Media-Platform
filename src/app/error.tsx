@@ -23,23 +23,13 @@ function Error({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-muted-foreground">
-            {error?.message || "An unexpected error has occurred."}
-          </p>
-
-          {error?.stack && process.env.NODE_ENV === "development" && (
-            <pre className="text-sm text-muted-foreground bg-muted p-4 rounded-md overflow-auto max-h-64">
-              {error.stack}
-            </pre>
-          )}
-
           <div className="flex flex-col sm:flex-row gap-3">
             <Button
               onClick={() => reset()}
               variant="outline"
               className="w-full sm:w-auto"
             >
-              Try Again
+              Refresh
             </Button>
             <Button
               onClick={() => router.push("/")}

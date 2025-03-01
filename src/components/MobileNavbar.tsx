@@ -9,12 +9,13 @@ import {
   UserIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth, SignInButton, SignOutButton } from "@clerk/nextjs";
+import { useAuth, useUser, SignInButton, SignOutButton } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 
 function MobileNavbar() {
   const { isSignedIn } = useAuth();
+  const { user } = useUser(); // Correct way to get the current user
   const { theme, setTheme } = useTheme();
 
   return (
@@ -27,7 +28,7 @@ function MobileNavbar() {
           </Link>
         </Button>
 
-        {isSignedIn ? (
+        {isSignedIn && user ? (
           <>
             <Button variant="ghost" size="icon" asChild>
               <Link href="/notifications">
@@ -36,7 +37,11 @@ function MobileNavbar() {
               </Link>
             </Button>
             <Button variant="ghost" size="icon" asChild>
-              <Link href="/profile">
+              <Link
+                href={`/profile/${
+                  user.username ?? user.primaryEmailAddress?.emailAddress.split("@")[0]
+                }`}
+              >
                 <UserIcon className="w-6 h-6" />
                 <span className="sr-only">Profile</span>
               </Link>
@@ -61,8 +66,8 @@ function MobileNavbar() {
           size="icon"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         >
-          <SunIcon className="h-6 w-6 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <MoonIcon className="absolute h-6 w-6 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <SunIcon className="h-6 w-6 transition-all dark:hidden" />
+          <MoonIcon className="h-6 w-6 hidden transition-all dark:block" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </div>
