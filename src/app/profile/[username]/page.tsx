@@ -1,4 +1,3 @@
-import { Metadata } from "next";
 import {
   getProfileByUsername,
   getUserLikedPosts,
@@ -7,34 +6,37 @@ import {
 } from "@/actions/profile.action";
 import { notFound } from "next/navigation";
 import ProfilePageClient from "./ProfilePageClient";
+import { ReactElement } from "react";
 
-interface ProfilePageProps {
-  params: { username: string };
-}
+type PageProps = { params: Promise<{ username: string }> };
 
-// Fix the type for generateMetadata
-export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata | undefined> {
-  const user = await getProfileByUsername(params.username);
-  if (!user) return;
-
+export async function generateMetadata({ params }: PageProps) {
+  const { username } = await params;
+  const user = await getProfileByUsername(username);
+  if (!user) {
+    return {
+      title: "User Not Found",
+      description: "The user you are looking for does not exist.",
+    };
+  }
   return {
     title: `${user.name ?? user.username}`,
     description: user.bio || `Check out ${user.username}'s profile.`,
   };
 }
 
-// Fix the type for ProfilePageServer
-async function ProfilePageServer({ params }: ProfilePageProps) {
-  const user = await getProfileByUsername(params.username);
-
-  if (!user) notFound();
-
+async function ProfilePageServer({ params }: PageProps): Promise<ReactElement> {
+  const { username } = await params;
+  const user = await getProfileByUsername(username);
+  if (!user) {
+    notFound();
+    return null as never;
+  }
   const [posts, likedPosts, isCurrentUserFollowing] = await Promise.all([
     getUserPosts(user.id),
     getUserLikedPosts(user.id),
     isFollowing(user.id),
   ]);
-
   return (
     <ProfilePageClient
       user={user}
