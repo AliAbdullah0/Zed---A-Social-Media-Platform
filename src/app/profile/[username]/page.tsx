@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import {
   getProfileByUsername,
   getUserLikedPosts,
@@ -7,7 +8,12 @@ import {
 import { notFound } from "next/navigation";
 import ProfilePageClient from "./ProfilePageClient";
 
-export async function generateMetadata({ params }: { params: { username: string } }) {
+interface ProfilePageProps {
+  params: { username: string };
+}
+
+// Fix the type for generateMetadata
+export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata | undefined> {
   const user = await getProfileByUsername(params.username);
   if (!user) return;
 
@@ -17,7 +23,8 @@ export async function generateMetadata({ params }: { params: { username: string 
   };
 }
 
-async function ProfilePageServer({ params }: { params: { username: string } }) {
+// Fix the type for ProfilePageServer
+async function ProfilePageServer({ params }: ProfilePageProps) {
   const user = await getProfileByUsername(params.username);
 
   if (!user) notFound();
@@ -37,4 +44,5 @@ async function ProfilePageServer({ params }: { params: { username: string } }) {
     />
   );
 }
+
 export default ProfilePageServer;
