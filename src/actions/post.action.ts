@@ -210,6 +210,6 @@ export async function deletePost(postId: string) {
     return { success: true };
   } catch (error) {
     console.error("Failed to delete post:", error);
-    return { success: false, error: "Failed to delete post" };
+    return { success: false, error: "Unauthorized to Delete Post." };
   }
 }
